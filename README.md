@@ -10,7 +10,7 @@
 
 ## 👇✨ Usar la App en la Web Aquí ✨👇
 
-## 🚀 https://ai.studio/apps/drive/1a3IsJUpG1yCcwt2MP7DBHO39fMsQ67pE 🚀
+## 🚀 [https://ai.studio/apps/drive/1a3IsJUpG1yCcwt2MP7DBHO39fMsQ67pE](https://ai.studio/apps/drive/1a3IsJUpG1yCcwt2MP7DBHO39fMsQ67pE) 🚀
 
 Automatiza el diseño de tus ciclos de cine. Sube un cartel, la IA hace el resto.
 
