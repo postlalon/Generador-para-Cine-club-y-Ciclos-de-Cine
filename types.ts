@@ -1,4 +1,5 @@
 
+
 export interface Movie {
   id: string;
   title: string;
@@ -48,6 +49,7 @@ export interface CustomColors {
 
   // New
   titleScale?: number;
+  titleTracking?: string; // letter-spacing (e.g. '0.2em')
 }
 
 export type CycleTheme = 'horror' | 'scifi' | 'classic' | 'custom' | string;

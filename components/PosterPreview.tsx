@@ -25,6 +25,7 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterProps>(({ settings, movie
   const colorTime = customColors?.colorTime || '#e50914';
   
   const titleScale = customColors?.titleScale || 1;
+  const titleTracking = customColors?.titleTracking || 'normal';
 
   // Background Logic
   let backgroundStyle: React.CSSProperties = {
@@ -37,15 +38,15 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterProps>(({ settings, movie
 
   if (useGradient && customColors?.gradient) {
     const { start, via, end } = customColors.gradient;
-    backgroundStyle = { background: `linear-gradient(to bottom, ${start}, ${via}, ${end})` };
+    backgroundStyle = { ...backgroundStyle, background: `linear-gradient(to bottom, ${start}, ${via}, ${end})` };
   } else if (useSolid && customColors?.bg) {
-    backgroundStyle = { backgroundColor: customColors.bg };
+    backgroundStyle = { ...backgroundStyle, backgroundColor: customColors.bg };
   } else if (!customColors) {
     // Fallback to theme classes if no custom overrides
     bgClass = theme.bg;
   } else {
     // Custom colors exist but incomplete config, fallback to solid
-     backgroundStyle = { backgroundColor: customColors.bg || '#000000' };
+     backgroundStyle = { ...backgroundStyle, backgroundColor: customColors.bg || '#000000' };
   }
 
   // Common Shadow Styles for Text
@@ -97,25 +98,25 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterProps>(({ settings, movie
             {/* Header: Title/Logo */}
             <header className="text-center flex flex-col items-center mb-4 mt-8">
                 <h1 
-                  className={`${fontClass} leading-none tracking-tighter`} 
-                  style={{ color: colorTitle, ...titleShadowStyle, fontSize: titleFontSize }}
+                  className={`${fontClass}`} 
+                  style={{ color: colorTitle, ...titleShadowStyle, fontSize: titleFontSize, lineHeight: '1.0', letterSpacing: titleTracking }}
                 >
                   {settings.title}
                 </h1>
             </header>
             
             {/* Date */}
-            <h3 className={`day-title ${fontClass} text-[1.6rem] mt-2 tracking-[0.05em]`} style={{ color: colorTime }}>
+            <h3 className={`day-title ${fontClass} text-[1.6rem] mt-2 tracking-[0.05em]`} style={{ color: colorTime, lineHeight: '1.0' }}>
                {targetMovie.date}
             </h3>
 
             {/* Subtitle / Day Theme */}
-            <h4 className={`day-theme-title ${subtitleStyleClass} text-[0.9rem] text-center`} style={{...textShadowStyle, color: colorSubtitle }}>
+            <h4 className={`day-theme-title ${subtitleStyleClass} text-[0.9rem] text-center`} style={{...textShadowStyle, color: colorSubtitle, lineHeight: '1.2' }}>
                {settings.subtitle}
             </h4>
 
             {/* Venue Text - Moved Here */}
-            <p className={`text-[0.65rem] uppercase tracking-widest opacity-80 mt-1 mb-6 text-center`} style={{ color: colorSubtitle }}>
+            <p className={`text-[0.65rem] uppercase tracking-widest opacity-80 mt-1 mb-6 text-center`} style={{ color: colorSubtitle, lineHeight: '1.2' }}>
                {settings.venue}
             </p>
 
@@ -131,21 +132,21 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterProps>(({ settings, movie
                     </div>
                     <div className="text-left flex flex-col justify-center h-full w-44 movie-info-block">
                         <div>
-                            <h4 className="movie-title font-bold text-[1.1rem] leading-[1.2]" style={{ color: colorTitle }}>
+                            <h4 className="movie-title font-bold text-[1.1rem]" style={{ color: colorTitle, lineHeight: '1.2' }}>
                               <i>{targetMovie.title}</i> {targetMovie.year && `(${targetMovie.year})`}
                             </h4>
-                            <p className="text-xs mt-1" style={{ color: colorDuration }}>Duración: {targetMovie.duration}</p>
+                            <p className="text-xs mt-1" style={{ color: colorDuration, lineHeight: '1.2' }}>Duración: {targetMovie.duration}</p>
                             {targetMovie.director && (
-                                <p className="text-[10px] text-white/60 uppercase tracking-wide mt-1" style={{ color: colorDuration }}>
+                                <p className="text-[10px] text-white/60 uppercase tracking-wide mt-1" style={{ color: colorDuration, lineHeight: '1.2' }}>
                                   Dir. {targetMovie.director}
                                 </p>
                             )}
-                            <p className="movie-description mt-2 text-[0.8rem] leading-[1.3]" style={{ color: colorDescription }}>
+                            <p className="movie-description mt-2 text-[0.8rem]" style={{ color: colorDescription, lineHeight: '1.3' }}>
                               {targetMovie.synopsis}
                             </p>
                         </div>
                         {/* Time at bottom of text block */}
-                        <p className={`movie-time ${fontClass} mt-4 text-[1.5rem] italic text-center`} style={{ ...timeShadowStyle, color: colorTime }}>
+                        <p className={`movie-time ${fontClass} mt-4 text-[1.5rem] italic text-center`} style={{ ...timeShadowStyle, color: colorTime, lineHeight: '1.0' }}>
                            {targetMovie.time} hrs
                         </p>
                     </div>
@@ -185,8 +186,8 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterProps>(({ settings, movie
                 {/* Header Logo Area */}
                 <header className="text-center flex flex-col items-center mb-6 mt-12">
                      <h1 
-                        className={`${fontClass} leading-none tracking-tighter`} 
-                        style={{ color: colorTitle, ...titleShadowStyle, fontSize: titleFontSize }}
+                        className={`${fontClass}`} 
+                        style={{ color: colorTitle, ...titleShadowStyle, fontSize: titleFontSize, lineHeight: '1.0', letterSpacing: titleTracking }}
                      >
                        {settings.title}
                      </h1>
@@ -194,15 +195,15 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterProps>(({ settings, movie
 
                 <section className="px-2">
                     <div className="text-center mb-6">
-                        <h3 className={`text-xl day-title ${fontClass} tracking-[0.05em]`} style={{ color: colorTime }}>
+                        <h3 className={`text-xl day-title ${fontClass} tracking-[0.05em]`} style={{ color: colorTime, lineHeight: '1.0' }}>
                           {targetMovie.date}
                         </h3>
                          {/* Subtitle / Day Theme */}
-                        <h4 className={`text-lg day-theme-title ${subtitleStyleClass} mt-2`} style={{...textShadowStyle, color: colorSubtitle }}>
+                        <h4 className={`text-lg day-theme-title ${subtitleStyleClass} mt-2`} style={{...textShadowStyle, color: colorSubtitle, lineHeight: '1.2' }}>
                           {settings.subtitle}
                         </h4>
                         {/* Venue Text - Moved Here */}
-                        <p className={`text-[0.75rem] uppercase tracking-widest opacity-80 mt-2`} style={{ color: colorSubtitle }}>
+                        <p className={`text-[0.75rem] uppercase tracking-widest opacity-80 mt-2`} style={{ color: colorSubtitle, lineHeight: '1.2' }}>
                            {settings.venue}
                         </p>
                     </div>
@@ -216,21 +217,21 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterProps>(({ settings, movie
                               )}
                         </div>
                         <div className="flex-grow text-left pr-4">
-                            <h4 className="movie-title font-bold text-[1.1rem] leading-[1.15]" style={{ color: colorTitle }}>
+                            <h4 className="movie-title font-bold text-[1.1rem]" style={{ color: colorTitle, lineHeight: '1.15' }}>
                               <i>{targetMovie.title}</i> {targetMovie.year && `(${targetMovie.year})`}
                             </h4>
                              {targetMovie.director && (
-                                <p className="text-[10px] text-white/60 uppercase tracking-wide mt-1 mb-1" style={{ color: colorDuration }}>
+                                <p className="text-[10px] text-white/60 uppercase tracking-wide mt-1 mb-1" style={{ color: colorDuration, lineHeight: '1.2' }}>
                                   Dir. {targetMovie.director}
                                 </p>
                             )}
-                            <p className="movie-description mt-2 text-[0.75rem] leading-[1.3] text-justify" style={{ color: colorDescription }}>
+                            <p className="movie-description mt-2 text-[0.75rem] text-justify" style={{ color: colorDescription, lineHeight: '1.3' }}>
                                {targetMovie.synopsis}
                             </p>
-                            <p className="text-xs mt-3" style={{ color: colorDuration }}>Duración: {targetMovie.duration}</p>
+                            <p className="text-xs mt-3" style={{ color: colorDuration, lineHeight: '1.2' }}>Duración: {targetMovie.duration}</p>
                             
                             {/* Time Display - Moved Here */}
-                            <p className={`${fontClass} text-[1.4rem] mt-4 italic text-center`} style={{ ...timeShadowStyle, color: colorTime }}>
+                            <p className={`${fontClass} text-[1.4rem] mt-4 italic text-center`} style={{ ...timeShadowStyle, color: colorTime, lineHeight: '1.0' }}>
                               {targetMovie.time} hrs
                             </p>
                         </div>
@@ -241,7 +242,7 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterProps>(({ settings, movie
             <footer className="text-center mb-2 mt-auto">
                 <div className="flex flex-row justify-around items-center w-full mx-auto gap-x-1">
                      <div className="flex flex-col items-center">
-                          <h5 className="text-sm sede-text font-display shadow-black drop-shadow-sm" style={{ color: colorSubtitle }}>Impulsa</h5>
+                          <h5 className="text-sm sede-text font-display shadow-black drop-shadow-sm" style={{ color: colorSubtitle, lineHeight: '1.2' }}>Impulsa</h5>
                           {settings.organizerLogo ? (
                              <img src={settings.organizerLogo} alt="Org" className="h-20 w-auto object-contain" />
                           ) : <div className="h-20 w-16 bg-white/5 rounded flex items-center justify-center text-[9px] text-white/30">LOGO</div>}
@@ -249,7 +250,7 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterProps>(({ settings, movie
                       
                       {/* Sede moved to right, Curaduría removed */}
                       <div className="flex flex-col items-center">
-                          <h5 className="text-sm sede-text font-display shadow-black drop-shadow-sm" style={{ color: colorSubtitle }}>Sede</h5>
+                          <h5 className="text-sm sede-text font-display shadow-black drop-shadow-sm" style={{ color: colorSubtitle, lineHeight: '1.2' }}>Sede</h5>
                           {settings.venueLogo ? (
                              <img src={settings.venueLogo} alt="Venue" className="h-20 w-auto object-contain" />
                           ) : <div className="h-20 w-16 bg-white/5 rounded flex items-center justify-center text-[9px] text-white/30">LOGO</div>}
@@ -276,19 +277,19 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterProps>(({ settings, movie
       {!customColors && (
         <div className={`absolute inset-0 bg-gradient-to-b ${theme.gradient} opacity-90 z-0`}></div>
       )}
-      <div className="absolute inset-0 opacity-10 pointer-events-none z-0" style={{backgroundImage: 'radial-gradient(circle at center, white 1px, transparent 1px)', backgroundSize: '30px 30px'}}></div>
+      {/* Removed the radial gradient dots layer here */}
       
       {/* Content */}
       <div className="relative z-10 flex flex-col h-full min-h-[600px]">
         {/* Main Title */}
         <div className="text-center mb-6 pb-4 border-b-2 border-white/10">
            <h1 
-             className={`${fontClass} leading-[0.85] mb-2`}
-             style={{ color: colorTitle, ...titleShadowStyle, fontSize: titleFontSize }}
+             className={`${fontClass} mb-2`}
+             style={{ color: colorTitle, ...titleShadowStyle, fontSize: titleFontSize, lineHeight: '1.0', letterSpacing: titleTracking }}
            >
             {settings.title}
           </h1>
-          <h2 className={`${subtitleStyleClass} text-2xl`} style={{ color: colorSubtitle }}>
+          <h2 className={`${subtitleStyleClass} text-2xl`} style={{ color: colorSubtitle, lineHeight: '1.2' }}>
             {settings.subtitle}
           </h2>
           <div className="mt-2 text-xs font-bold text-white/50 bg-white/5 inline-block px-3 py-1 rounded-full uppercase tracking-wider">
@@ -310,27 +311,27 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterProps>(({ settings, movie
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <span 
-                        className={`${fontClass} text-2xl uppercase leading-none`}
-                        style={{ color: colorTime }}
+                        className={`${fontClass} text-2xl uppercase`}
+                        style={{ color: colorTime, lineHeight: '1.0' }}
                       >
                          {movie.date}
                       </span>
                     </div>
                     
-                    <h3 className={`${theme.fontBody} text-xl font-bold leading-tight truncate`} style={{ color: colorTitle }}>
+                    <h3 className={`${theme.fontBody} text-xl font-bold`} style={{ color: colorTitle, lineHeight: '1.2' }}>
                       {movie.title}
                     </h3>
                     
-                    <p className="text-[10px] uppercase tracking-wide mb-1" style={{ color: colorDuration }}>
+                    <p className="text-[10px] uppercase tracking-wide mb-1" style={{ color: colorDuration, lineHeight: '1.2' }}>
                        {movie.year && <span>{movie.year} • </span>} {movie.time} hrs • {movie.duration}
                     </p>
                     {movie.director && (
-                      <p className="text-[10px] text-white/50 uppercase tracking-wide mb-1" style={{ color: colorDescription }}>
+                      <p className="text-[10px] text-white/50 uppercase tracking-wide mb-1" style={{ color: colorDescription, lineHeight: '1.2' }}>
                          Dir. {movie.director}
                       </p>
                     )}
                     
-                    <p className="text-xs leading-tight" style={{ color: colorDescription }}>
+                    <p className="text-xs" style={{ color: colorDescription, lineHeight: '1.2' }}>
                       {movie.synopsis}
                     </p>
                 </div>
@@ -344,12 +345,12 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterProps>(({ settings, movie
              <div className="flex justify-around items-end w-full pt-2">
                 {settings.organizerLogo && (
                   <div className="flex flex-col items-center">
-                    <img src={settings.organizerLogo} alt="Org" className="h-20 w-auto object-contain filter grayscale contrast-125 opacity-80" />
+                    <img src={settings.organizerLogo} alt="Org" className="h-24 w-auto object-contain filter grayscale contrast-125 opacity-80" />
                   </div>
                 )}
                 {settings.venueLogo && (
                   <div className="flex flex-col items-center">
-                    <img src={settings.venueLogo} alt="Venue" className="h-20 w-auto object-contain opacity-80" />
+                    <img src={settings.venueLogo} alt="Venue" className="h-24 w-auto object-contain opacity-80" />
                   </div>
                 )}
             </div>

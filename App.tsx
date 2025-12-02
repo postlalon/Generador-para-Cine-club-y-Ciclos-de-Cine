@@ -1,11 +1,13 @@
 
-import React, { useState, useRef } from 'react';
+
+import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenAI } from "@google/genai";
 import { Movie, CycleSettings, CycleTheme, ThemeStyle, CustomColors } from './types';
 import { generateCycleTitle, analyzePosterImage, searchMovieDetails, generateThemeFromDescription, suggestGradient, suggestFont, suggestSolidColor } from './services/geminiService';
 import PosterPreview from './components/PosterPreview';
 import { THEMES, FONT_OPTIONS } from './constants';
-import html2canvas from 'html2canvas'; 
+import { toPng } from 'html-to-image';
+import JSZip from 'jszip';
 
 // Icons
 const IconMagic = (props: React.SVGProps<SVGSVGElement>) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M9 3v4"/><path d="M2 7h6"/><path d="M19 17v4"/><path d="M15 17v4"/><path d="M13 21h6"/></svg>;
@@ -13,8 +15,9 @@ const IconSearch = (props: React.SVGProps<SVGSVGElement>) => <svg {...props} xml
 const IconDownload = (props: React.SVGProps<SVGSVGElement>) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>;
 const IconUpload = (props: React.SVGProps<SVGSVGElement>) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>;
 const IconPalette = (props: React.SVGProps<SVGSVGElement>) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.093 0-.679.5-1.25 1.125-1.25H16c3.25 0 6-2.625 6-6 0-3.313-2.625-6-6-6z"/></svg>;
-const IconSettings = (props: React.SVGProps<SVGSVGElement>) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.47a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>;
+const IconSettings = (props: React.SVGProps<SVGSVGElement>) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.47a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>;
 const IconDice = (props: React.SVGProps<SVGSVGElement>) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><path d="M16 8h.01"/><path d="M8 8h.01"/><path d="M8 16h.01"/><path d="M16 16h.01"/><path d="M12 12h.01"/></svg>;
+const IconLetterCase = (props: React.SVGProps<SVGSVGElement>) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>;
 
 const getRandomHex = () => '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
 
@@ -47,6 +50,31 @@ const App: React.FC = () => {
   // --- REFS ---
   const generalPosterRef = useRef<HTMLDivElement>(null);
   const storyPosterRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  // --- EFFECTS ---
+  // Manual Font Injection to fix html-to-image CORS issues
+  useEffect(() => {
+    const fetchFonts = async () => {
+      // Check if already injected to avoid duplicates
+      if (document.getElementById('manual-google-fonts')) return;
+
+      const fontUrl = "https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Anton&family=Bebas+Neue&family=Cinzel:wght@400;700&family=Creepster&family=Lobster&family=Metal+Mania&family=Montserrat:wght@400;700&family=Orbitron:wght@400;700&family=Oswald:wght@400;700&family=Pacifico&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Raleway:wght@400;700&family=Roboto:wght@400;700&display=swap";
+      
+      try {
+        const response = await fetch(fontUrl);
+        const cssText = await response.text();
+        
+        const style = document.createElement('style');
+        style.id = 'manual-google-fonts';
+        style.textContent = cssText;
+        document.head.appendChild(style);
+      } catch (error) {
+        console.error("Error loading fonts manually:", error);
+      }
+    };
+    
+    fetchFonts();
+  }, []);
 
   // --- DERIVED ---
   const currentThemeStyle: ThemeStyle = 
@@ -106,7 +134,8 @@ const App: React.FC = () => {
         colorDescription: '#d1d5db',
         colorDuration: '#9ca3af',
         colorTime: '#e50914',
-        titleScale: 1
+        titleScale: 1,
+        titleTracking: '-0.05em'
       };
       setCustomColors(defaults);
       return defaults;
@@ -247,23 +276,103 @@ const App: React.FC = () => {
          colorDescription: palette.description,
          colorDuration: palette.duration,
          colorTime: palette.time,
-         titleScale: 1
+         titleScale: 1,
+         titleTracking: '0em'
        });
        setActiveTab('customize');
     }
   }
 
+  // Helper for generating PNG blob
+  const generateBlob = async (element: HTMLElement): Promise<Blob | null> => {
+     if (!element) return null;
+     await document.fonts.ready;
+     await new Promise(resolve => setTimeout(resolve, 100));
+     
+     const dataUrl = await toPng(element, { 
+        cacheBust: false, 
+        pixelRatio: 2, 
+        backgroundColor: null,
+        filter: (node) => {
+           if (node.tagName === 'LINK' && (node as HTMLLinkElement).rel === 'stylesheet') {
+             return false;
+           }
+           return true;
+        }
+      });
+      
+      const res = await fetch(dataUrl);
+      return res.blob();
+  };
+
   const handleDownload = async (element: HTMLElement | null, filename: string) => {
     if (!element) return;
     try {
-      const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: null });
-      const link = document.createElement('a');
-      link.download = `${filename}.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
+      const blob = await generateBlob(element);
+      if(blob) {
+         const url = URL.createObjectURL(blob);
+         const link = document.createElement('a');
+         link.download = `${filename}.png`;
+         link.href = url;
+         link.click();
+         URL.revokeObjectURL(url);
+      }
     } catch (err) {
       console.error("Download failed", err);
-      alert("Error creating image. Ensure all images are valid.");
+      alert("Error creating image.");
+    }
+  };
+
+  const handleDownloadZIP = async () => {
+    // If no posters are available, do nothing
+    if(!generalPosterRef.current && movies.length === 0) return;
+    setLoading(true);
+
+    try {
+      const zip = new JSZip();
+      const safeTitle = settings.title.replace(/[^a-z0-9]/gi, '_');
+      const folderName = `CineClub_Pack_${safeTitle}`;
+      const folder = zip.folder(folderName);
+      
+      if(folder) {
+         // 1. General Poster
+         if (generalPosterRef.current) {
+            const blob = await generateBlob(generalPosterRef.current);
+            if(blob) folder.file("00_Cartel_General.png", blob);
+         }
+
+         // 2. Individual Posters
+         // We iterate through movies to get the correct index and title
+         for (let i = 0; i < movies.length; i++) {
+            const ref = storyPosterRefs.current[i];
+            
+            // Check if ref exists
+            if (ref) {
+              const blob = await generateBlob(ref);
+              const sanitizedMovieTitle = movies[i].title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+              
+              // Appending view mode to filename to be clear what format was downloaded (Feed vs Story)
+              const formatSuffix = individualViewMode === 'story' ? 'Story_9x16' : 'Post_4x5';
+              
+              if(blob) folder.file(`Poster_${i+1}_${sanitizedMovieTitle}_${formatSuffix}.png`, blob);
+            }
+         }
+
+         // Generate and Save
+         const content = await zip.generateAsync({ type: "blob" });
+         const url = URL.createObjectURL(content);
+         const link = document.createElement('a');
+         link.download = `${safeTitle}_Assets.zip`;
+         link.href = url;
+         link.click();
+         URL.revokeObjectURL(url);
+      }
+
+    } catch(err) {
+      console.error("ZIP Generation failed", err);
+      alert("Error generando el archivo ZIP.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -468,6 +577,25 @@ const App: React.FC = () => {
                           className="w-full cursor-pointer h-1 bg-white/20 rounded-lg appearance-none"
                         />
                      </div>
+                     {/* FONT SPACING (TRACKING) SLIDER */}
+                     <div className="mt-3">
+                        <label className="block text-[10px] uppercase tracking-wider text-stone-400 mb-1 flex justify-between">
+                            <span>Espaciado del Título (Tracking)</span>
+                            <span className="text-white">{customColors?.titleTracking || '-0.05em'}</span>
+                        </label>
+                        <input 
+                          type="range" 
+                          min="-0.2" 
+                          max="1.0" 
+                          step="0.05"
+                          value={parseFloat((customColors?.titleTracking || '-0.05').replace('em', ''))}
+                          onChange={(e) => {
+                             const current = ensureCustomColors();
+                             setCustomColors({...current, titleTracking: `${e.target.value}em`});
+                          }}
+                          className="w-full cursor-pointer h-1 bg-white/20 rounded-lg appearance-none"
+                        />
+                     </div>
                   </div>
 
                   {/* BACKGROUND PICKER */}
@@ -539,7 +667,7 @@ const App: React.FC = () => {
                           <div className="flex items-center gap-2">
                               <span className="text-[10px] w-8">Fin</span>
                               <input type="color" className="bg-transparent cursor-pointer flex-1" 
-                                 value={customColors?.gradient?.end || '#000000'}
+                                 value={customColors?.gradient?.end || '#0000000'}
                                  onChange={(e) => {
                                     const current = ensureCustomColors();
                                     setCustomColors({...current, gradient: { ...current.gradient!, end: e.target.value }});
@@ -754,16 +882,28 @@ const App: React.FC = () => {
       {/* RIGHT: PREVIEW AREA */}
       <div className="flex-1 bg-stone-900 overflow-y-auto overflow-x-hidden p-8 flex flex-col items-center gap-12 relative">
          <div className="absolute inset-0 opacity-5 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
+         
+         {/* Top Actions Bar */}
+         <div className="w-full max-w-5xl flex justify-end">
+            <button 
+                onClick={handleDownloadZIP}
+                disabled={loading}
+                className="flex items-center gap-2 text-xs bg-emerald-600 text-white px-4 py-2 rounded font-bold hover:bg-emerald-500 transition-colors shadow-lg disabled:opacity-50"
+              >
+                {loading ? <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin"></div> : <IconDownload />} 
+                Descargar Todo (ZIP)
+            </button>
+         </div>
 
          {/* Section: General Poster */}
          <div className="w-full max-w-5xl flex flex-col items-center">
             <div className="flex justify-between w-full items-center mb-4 max-w-[600px]">
               <h2 className="text-stone-400 uppercase tracking-widest text-sm font-bold">Cartel General</h2>
               <button 
-                onClick={() => handleDownload(generalPosterRef.current, 'cartel-general-4x5')}
+                onClick={() => handleDownload(generalPosterRef.current, `${settings.title || 'Ciclo'} - Cartel General`)}
                 className="flex items-center gap-2 text-xs bg-white text-black px-3 py-1 rounded font-bold hover:bg-stone-200 transition-colors"
               >
-                <IconDownload /> Descargar PNG
+                <IconDownload /> PNG
               </button>
             </div>
             <div className="shadow-2xl shadow-black">
@@ -815,7 +955,7 @@ const App: React.FC = () => {
                     />
                   </div>
                   <button 
-                    onClick={() => handleDownload(storyPosterRefs.current[idx], `poster-${movie.title}-${individualViewMode}`)}
+                    onClick={() => handleDownload(storyPosterRefs.current[idx], `${settings.title || 'Ciclo'} - ${movie.title} - ${individualViewMode === 'story' ? 'Story' : 'Post'}`)}
                     className="text-stone-500 hover:text-white text-xs flex items-center gap-1 mt-2"
                   >
                     <IconDownload /> Descargar
