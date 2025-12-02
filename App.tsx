@@ -1,5 +1,4 @@
 
-
 import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenAI } from "@google/genai";
 import { Movie, CycleSettings, CycleTheme, ThemeStyle, CustomColors } from './types';
@@ -27,7 +26,7 @@ const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'general' | 'movies' | 'customize'>('general');
   const [themePrompt, setThemePrompt] = useState('');
   
-  // View Toggle for Individual Posters
+  // View Toggle for Individual Posters (Visible)
   const [individualViewMode, setIndividualViewMode] = useState<'story' | 'feed'>('story');
 
   const [settings, setSettings] = useState<CycleSettings>({
@@ -50,6 +49,10 @@ const App: React.FC = () => {
   // --- REFS ---
   const generalPosterRef = useRef<HTMLDivElement>(null);
   const storyPosterRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  // Hidden Refs for ZIP Export (Always rendered)
+  const hiddenStoryRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const hiddenFeedRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   // --- EFFECTS ---
   // Manual Font Injection to fix html-to-image CORS issues
@@ -332,29 +335,35 @@ const App: React.FC = () => {
       const zip = new JSZip();
       const safeTitle = settings.title.replace(/[^a-z0-9]/gi, '_');
       const folderName = `CineClub_Pack_${safeTitle}`;
-      const folder = zip.folder(folderName);
+      const rootFolder = zip.folder(folderName);
       
-      if(folder) {
+      if(rootFolder) {
          // 1. General Poster
          if (generalPosterRef.current) {
             const blob = await generateBlob(generalPosterRef.current);
-            if(blob) folder.file("00_Cartel_General.png", blob);
+            if(blob) rootFolder.file("00_Cartel_General.png", blob);
          }
 
-         // 2. Individual Posters
-         // We iterate through movies to get the correct index and title
+         // Subfolders for organized export
+         const storiesFolder = rootFolder.folder("Stories_9x16");
+         const postsFolder = rootFolder.folder("Posts_4x5");
+
+         // 2. Individual Posters (From Hidden References)
          for (let i = 0; i < movies.length; i++) {
-            const ref = storyPosterRefs.current[i];
+            const sanitizedMovieTitle = movies[i].title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
             
-            // Check if ref exists
-            if (ref) {
-              const blob = await generateBlob(ref);
-              const sanitizedMovieTitle = movies[i].title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-              
-              // Appending view mode to filename to be clear what format was downloaded (Feed vs Story)
-              const formatSuffix = individualViewMode === 'story' ? 'Story_9x16' : 'Post_4x5';
-              
-              if(blob) folder.file(`Poster_${i+1}_${sanitizedMovieTitle}_${formatSuffix}.png`, blob);
+            // Capture Story 9x16
+            const storyRef = hiddenStoryRefs.current[i];
+            if (storyRef && storiesFolder) {
+              const blob = await generateBlob(storyRef);
+              if(blob) storiesFolder.file(`Story_${i+1}_${sanitizedMovieTitle}.png`, blob);
+            }
+
+            // Capture Feed 4x5
+            const feedRef = hiddenFeedRefs.current[i];
+            if (feedRef && postsFolder) {
+              const blob = await generateBlob(feedRef);
+              if(blob) postsFolder.file(`Post_${i+1}_${sanitizedMovieTitle}.png`, blob);
             }
          }
 
@@ -918,7 +927,7 @@ const App: React.FC = () => {
             </div>
          </div>
 
-         {/* Section: Individual Posters */}
+         {/* Section: Individual Posters (Visible) */}
          <div className="w-full max-w-6xl">
            <div className="flex justify-between items-center border-t border-white/10 pt-8 mb-6 max-w-4xl mx-auto">
               <h2 className="text-stone-400 uppercase tracking-widest text-sm font-bold">Individual Posters</h2>
@@ -964,6 +973,34 @@ const App: React.FC = () => {
              ))}
              {movies.length === 0 && <div className="text-stone-600 italic">Agrega películas para ver los carteles individuales...</div>}
            </div>
+         </div>
+         
+         {/* Hidden Render Zone for Exporting (Generates both formats for all movies) */}
+         <div style={{ position: 'fixed', top: '-10000px', left: '-10000px', pointerEvents: 'none', opacity: 0 }}>
+            {movies.map((movie, idx) => (
+                <React.Fragment key={`hidden-export-${idx}`}>
+                    {/* Story Format */}
+                    <PosterPreview 
+                        ref={el => { hiddenStoryRefs.current[idx] = el; }}
+                        settings={settings} 
+                        movies={movies} 
+                        type="story" 
+                        targetMovie={movie}
+                        themeStyle={currentThemeStyle}
+                        customColors={customColors}
+                    />
+                    {/* Feed Format */}
+                    <PosterPreview 
+                        ref={el => { hiddenFeedRefs.current[idx] = el; }}
+                        settings={settings} 
+                        movies={movies} 
+                        type="feed" 
+                        targetMovie={movie}
+                        themeStyle={currentThemeStyle}
+                        customColors={customColors}
+                    />
+                </React.Fragment>
+            ))}
          </div>
 
       </div>
