@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CineClub Poster Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Importing diverse fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Anton&family=Bebas+Neue&family=Cinzel:wght@400;700&family=Creepster&family=Lobster&family=Metal+Mania&family=Montserrat:wght@400;700&family=Orbitron:wght@400;700&family=Oswald:wght@400;700&family=Pacifico&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Raleway:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+      .font-horror { font-family: 'Creepster', cursive; }
+      .font-scifi { font-family: 'Orbitron', sans-serif; }
+      .font-display { font-family: 'Bebas Neue', sans-serif; }
+      .font-body { font-family: 'Montserrat', sans-serif; }
+      .font-serif { font-family: 'Playfair Display', serif; }
+      
+      /* New Manual Fonts */
+      .font-anton { font-family: 'Anton', sans-serif; }
+      .font-cinzel { font-family: 'Cinzel', serif; }
+      .font-oswald { font-family: 'Oswald', sans-serif; }
+      .font-lobster { font-family: 'Lobster', cursive; }
+      .font-pacifico { font-family: 'Pacifico', cursive; }
+      .font-abril { font-family: 'Abril Fatface', cursive; }
+      .font-raleway { font-family: 'Raleway', sans-serif; }
+      .font-metal { font-family: 'Metal Mania', cursive; }
+      .font-roboto { font-family: 'Roboto', sans-serif; }
+
+      /* Custom scrollbar for dark theme */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #1a1a1a; 
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #888; 
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #555; 
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "html2canvas": "https://aistudiocdn.com/html2canvas@^1.4.1",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0"
+  }
+}
+</script>
+</head>
+  <body class="bg-stone-950 text-stone-200 font-body antialiased selection:bg-red-900 selection:text-white">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>

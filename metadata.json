@@ -1,0 +1,5 @@
+{
+  "name": "CineClub Poster Generator",
+  "description": "An AI-powered tool to generate aesthetic film club posters, manage movie cycles, and export designs for social media.",
+  "requestFramePermissions": []
+}
