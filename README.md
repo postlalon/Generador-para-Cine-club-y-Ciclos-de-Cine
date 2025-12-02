@@ -62,7 +62,7 @@ Descarga los assets listos para publicar: Stories (9:16) con hora de proyección
 <div align="center">
 👨‍🎨 Créditos
 
-Idea original, UI/UX y Diseño Gráfico por:
+Idea original, UI/UX por:
 
 👋 @postlalon
 
