@@ -1,6 +1,6 @@
 <div align="center">
 
-🎬 Generador de Carteles con IA para Cineclubs
+## 🎬 Generador de Carteles con IA para Cineclubs
 
 <!-- IMAGEN PRINCIPAL (HERO) -->
 
@@ -8,17 +8,19 @@
 
 <!-- LINK PRINCIPAL -->
 
-✨ Toca aquí para usar la App en AI Studio ✨
+## 👇✨ Usar la App en la Web Aquí ✨👇
+
+## 🚀 https://ai.studio/apps/drive/1a3IsJUpG1yCcwt2MP7DBHO39fMsQ67pE 🚀
 
 Automatiza el diseño de tus ciclos de cine. Sube un cartel, la IA hace el resto.
 
 </div>
 
-🚀 ¿Qué es esto?
+## 🚀 ¿Qué es esto?
 
 Esta aplicación es una herramienta diseñada para gestores de cineclubs y curadores de ciclos de cine. Su objetivo es reducir el tiempo de diseño gráfico a segundos, manteniendo una estética profesional y coherente.
 
-✨ Funcionalidades Principales
+## ✨ Funcionalidades Principales
 
 🤖 Auto-rellenado Inteligente
 Al subir el cartel original de la película, la aplicación detecta y rellena automáticamente:
@@ -31,13 +33,16 @@ Director
 
 Sinopsis/Descripción
 
-🎨 Tema Dinámico con IA
+## 🏢 Logos de Patrocinadores y Sedes
+Permite subir y gestionar logos de tus patrocinadores y sedes para integrarlos automáticamente en el diseño final sin esfuerzo.
+
+## 🎨 Tema Dinámico con IA
 Analiza la paleta de colores del cartel subido y genera un tema visual acorde para los textos y fondos automáticamente.
 
-🖌️ Personalización
+## 🖌️ Personalización
 Permite editar todos los campos generados y ajustar los estilos si es necesario.
 
-📱 Exportación Multi-formato
+## 📱 Exportación Multi-formato
 Descarga los assets listos para publicar:
 
 Stories (9:16): Formato vertical para Instagram/TikTok (incluye hora de proyección).
@@ -70,7 +75,9 @@ Cartel General: Una vista consolidada con todas las películas del ciclo.
 </table>
 </div>
 
-👨‍🎨 Créditos
+<div align="center">
+	
+## 👨‍🎨 Créditos
 
 <div align="center">
 
@@ -82,7 +89,7 @@ Idea original, UI/UX y Diseño Gráfico por:
 
 </div>
 
-🛠️ Instalación y Despliegue
+## 🛠️ Instalación y Despliegue
 
 Este proyecto contiene todo lo necesario para ejecutarse localmente usando Google AI Studio.
 
@@ -110,3 +117,4 @@ Iniciar la aplicación:
 Ejecuta el servidor de desarrollo:
 
 npm run dev
+
